@@ -1,10 +1,11 @@
 import { Note } from "../models/Note.js";
 import { errorResponse, successResponse } from "../responseWrapper.js"
+import {v2 as cloudinary} from 'cloudinary';
 
 export const getNotes=async(req,res)=>{
     try {
         const userId = req.user._id;
-        const allNotes = await Note.find({user:userId});
+        const allNotes = (await Note.find({user:userId})).reverse();
         return res.send(successResponse(200,allNotes))
     } catch (error) {
        return res.send(errorResponse(500,error.message))
@@ -14,12 +15,25 @@ export const getNotes=async(req,res)=>{
 
 export const createNotes=async(req,res)=>{
     try {
-        const {title,description} = req.body;
+        const {title,description,img} = req.body;
         if(!title || !description){
             return res.send(errorResponse(404,"All fields are required."))
         }
-        // const note = new Note({title,description,user:req.user})
-        // await note.save();
+        if(img){
+            const cloudImage = await cloudinary.uploader.upload(img,{
+                folder:"to-do-image"
+            })
+            await Note.create({
+                title,
+                description,
+                image:{
+                    id:cloudImage.public_id,
+                    url:cloudImage.url
+                },
+                user:req.user
+            })
+            return res.send(successResponse(201,"Task added successfully."))
+        }
         await Note.create({
             title,
             description,

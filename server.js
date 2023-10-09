@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from 'cors'
 import morgan from 'morgan'
 import mainRouter from "./routes/router.js";
+import {v2 as cloudinary} from 'cloudinary';
 const app = express();
 dotenv.config({path:'./config.env'})
 dbConnect();
@@ -18,6 +19,13 @@ app.use(cors({
     credentials:true,
     methods:["GET","POST","PUT","DELETE"]
 }))
+// ---------- cloudinary
+cloudinary.config({
+    cloud_name:process.env.CLOUDINARY_NAME,
+    api_key:process.env.CLOUDINARY_API_KEY,
+    api_secret:process.env.CLOUDINARY_SECRETE_KEY
+  });
+
 // routes-----------
 app.use('/api/v1',mainRouter)
 
