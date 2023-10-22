@@ -6,9 +6,9 @@ export const getNotes=async(req,res)=>{
     try {
         const userId = req.user._id;
         const allNotes = (await Note.find({user:userId})).reverse();
-        return res.send(successResponse(200,allNotes))
+        return res.send(successResponse(201,allNotes))
     } catch (error) {
-       return res.send(errorResponse(500,error.message))
+       return res.send(errorResponse(501,error.message))
     }
 }
 
@@ -17,7 +17,7 @@ export const createNotes=async(req,res)=>{
     try {
         const {title,description,img} = req.body;
         if(!title || !description){
-            return res.send(errorResponse(404,"All fields are required."))
+            return res.send(errorResponse(404,"All fields are required"))
         }
         if(img){
             const cloudImage = await cloudinary.uploader.upload(img,{
@@ -32,16 +32,16 @@ export const createNotes=async(req,res)=>{
                 },
                 user:req.user
             })
-            return res.send(successResponse(201,"Task added successfully."))
+            return res.send(successResponse(201,"Task added successfully"))
         }
         await Note.create({
             title,
             description,
             user:req.user
         })
-        return res.send(successResponse(201,"Task added successfully."))
+        return res.send(successResponse(201,"Task added successfully"))
     } catch (error) {
-      return  res.send(errorResponse(500,error.message))
+      return  res.send(errorResponse(501,error.message))
     }
 }
 
@@ -51,7 +51,7 @@ export const updateNotes=async(req,res)=>{
         const {id} = req.params;
         const {title,description} = req.body;
         if(!title || !description){
-            return res.send(errorResponse(404,"All fields are required."))
+            return res.send(errorResponse(404,"All fields are required"))
         }
         const note = await Note.findById(id);
         note.isCompleted = !note.isCompleted;
@@ -61,9 +61,9 @@ export const updateNotes=async(req,res)=>{
         note.title = title;
         note.description = description;
         await note.save();
-       return res.send(successResponse(201,"Task updated successfully."))
+       return res.send(successResponse(201,"Task updated successfully"))
     } catch (error) {
-       return res.send(errorResponse(500,error.message))
+       return res.send(errorResponse(501,error.message))
     }
 
 }
@@ -77,8 +77,8 @@ export const deleteNotes=async(req,res)=>{
           return  res.send(errorResponse(404,"Task not Found."))
         }
        await note.deleteOne();
-       return res.send(successResponse(201,"Task deleted successfully."))
+       return res.send(successResponse(201,"Task deleted successfully"))
     } catch (error) {
-       return res.send(errorResponse(500,error.message))
+       return res.send(errorResponse(501,error.message))
     }
 }
