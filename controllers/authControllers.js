@@ -43,6 +43,8 @@ export const loginController=async(req,res)=>{
             httpOnly:true,
             // maxAge:1000*10
             maxAge:24*60*60*1000, // 24 hours
+            sameSite:process.env.NODE_ENV=="Development"?"lax":"none",
+            secure:process.env.NODE_ENV==="Development"?false:true
             // it means we can able to get connect with backend even if client deploy in different playform. and should be add secure:true otherwise it will not work.
             // note : this is not work in postman or localhost.
         }
